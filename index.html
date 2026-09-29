@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light" data-textsize="normal" data-motion="full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LKPD Interaktif Informatika Kelas 8 — Proyek Integratif: Uji, Presentasi, Refleksi (K8P16)">
+<meta name="author" content="TIM MGMP INFORMATIKA SMP NEGERI 19 KOTA BEKASI">
+<meta name="theme-color" content="#1E5B94">
+<title>KARYA LAB — Uji, Perbaiki, Tampilkan Karyamu!</title>
+
+<!-- ⚙️ TUNABLE: favicon -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<!-- Font opsional. Jika CDN gagal, aplikasi tetap jalan dengan font sistem. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="show-padanan">
+
+<!-- ================= KANVAS KONFETI ================= -->
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+<!-- ================= TOAST ================= -->
+<div id="toastBox" class="toast-box" role="status" aria-live="polite"></div>
+
+<!-- ================= HEADER STICKY ================= -->
+<header class="app-header" id="appHeader">
+  <div class="header-inner">
+
+    <!-- ⚙️ TUNABLE: LOGO_PATH = "logo.png" -->
+    <button class="logo-wrap" id="logoBtn" title="Klik 3× untuk Mode Guru" aria-label="Logo sekolah. Klik tiga kali untuk mode guru.">
+      <img src="logo.png" alt="Logo SMP Negeri 19 Kota Bekasi" class="logo-img" id="logoImg">
+      <span class="logo-fallback" id="logoFallback" aria-hidden="true">SMPN19</span>
+    </button>
+
+    <div class="header-title">
+      <h1 id="hdrTitle">KARYA LAB</h1>
+      <p class="header-sub">
+        <span class="istilah" data-padanan="Artefak (hasil karya)" title="Artefak (hasil karya)">Artifact</span>
+        · Uji · Presentasi · Refleksi
+      </p>
+    </div>
+
+    <div class="header-tools">
+      <button class="tool-btn" id="btnLang" title="Ganti tampilan padanan bahasa" aria-label="Toggle bahasa">EN/ID</button>
+      <button class="tool-btn" id="btnSound" title="Suara hidup/mati" aria-label="Suara">🔊</button>
+      <button class="tool-btn" id="btnTheme" title="Mode gelap / terang" aria-label="Mode gelap">🌙</button>
+      <button class="tool-btn" id="btnText" title="Ukuran teks: Normal → Besar → Ekstra" aria-label="Ukuran teks">A+</button>
+      <button class="tool-btn" id="btnHelp" title="Cara bermain & glosarium" aria-label="Bantuan">❓</button>
+    </div>
+  </div>
+
+  <!-- Progress bintang 1–7 -->
+  <div class="progress-strip" id="progressStrip" aria-label="Kemajuan misi"></div>
+</header>
+
+<!-- ================= MINI-MAP ================= -->
+<nav class="minimap" id="minimap" aria-label="Peta perjalanan misi"></nav>
+
+<!-- ================= AREA SCREEN ================= -->
+<main id="appMain">
+
+  <!-- ============ HALAMAN PEMBUKA ============ -->
+  <section class="screen active" id="screen-start">
+    <div class="card hero-card">
+      <div class="hero-badge">
+        <span class="logo-fallback big" aria-hidden="true">SMPN19</span>
+      </div>
+      <h2 class="hero-title">KARYA LAB</h2>
+      <p class="hero-sub">Uji, Perbaiki, Tampilkan Karyamu!</p>
+      <p class="hero-desc">
+        Kamu akan menguji <span class="istilah" data-padanan="Artefak (hasil karya)" title="Artefak (hasil karya)">artifact</span>
+        milik kelompokmu dengan <strong>Uji 3B</strong>: Berfungsi, Benar, Bermanfaat &amp; Aman.
+        Lewati 7 misi, lalu tampilkan karyamu di panggung!
+      </p>
+
+      <form id="formStart" class="form-grid" autocomplete="off">
+        <label class="field">
+          <span>Nama Kelompok <em>(maks 40 huruf)</em></span>
+          <input type="text" id="inpKelompok" maxlength="40" required
+                 placeholder="Contoh: Kelompok 3 - Sampah Plastik">
+        </label>
+
+        <div class="field">
+          <span>Nama Anggota <em>(5–6 orang, maks 25 huruf/baris)</em></span>
+          <div class="anggota-grid" id="anggotaGrid">
+            <input type="text" class="inp-anggota" maxlength="25" placeholder="Anggota 1">
+            <input type="text" class="inp-anggota" maxlength="25" placeholder="Anggota 2">
+            <input type="text" class="inp-anggota" maxlength="25" placeholder="Anggota 3">
+            <input type="text" class="inp-anggota" maxlength="25" placeholder="Anggota 4">
+            <input type="text" class="inp-anggota" maxlength="25" placeholder="Anggota 5">
+            <input type="text" class="inp-anggota" maxlength="25" placeholder="Anggota 6 (opsional)">
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Pilih Jenis Karyamu</span>
+          <select id="inpJenis" required>
+            <option value="">— Pilih salah satu —</option>
+            <option value="Dashboard">Dashboard (papan pantau data)</option>
+            <option value="Infografis">Infografis (poster informasi)</option>
+            <option value="Program">Program (Scratch / kuis)</option>
+            <option value="Kampanye">Kampanye Digital (ajakan)</option>
+          </select>
+        </label>
+
+        <div class="field">
+          <span>Pilih Peranmu</span>
+          <div class="peran-grid" id="peranGrid">
+            <label class="chip-radio"><input type="radio" name="peran" value="Pemandu Waktu"><span>⏱️ Pemandu Waktu</span></label>
+            <label class="chip-radio"><input type="radio" name="peran" value="Pencatat Temuan"><span>📝 Pencatat Temuan</span></label>
+            <label class="chip-radio"><input type="radio" name="peran" value="Juru Demo"><span>🎮 Juru Demo</span></label>
+            <label class="chip-radio"><input type="radio" name="peran" value="Juru Bicara"><span>🎤 Juru Bicara</span></label>
+            <label class="chip-radio"><input type="radio" name="peran" value="Penguji Tamu"><span>🔎 Penguji Tamu</span></label>
+          </div>
+        </div>
+      </form>
+
+      <div class="btn-row center">
+        <button class="btn btn-primary btn-big" id="btnMulai">MULAI UJI KARYA 🚀</button>
+      </div>
+      <div class="btn-row center">
+        <button class="btn btn-ghost" id="btnCaraMain">📖 Cara Bermain</button>
+        <button class="btn btn-ghost" id="btnLanjut">⏩ Lanjutkan Progres</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISI 1 ============ -->
+  <section class="screen" id="screen-misi1">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">MISI 1</span>
+        <h2>Pilih Jenis Karya &amp; Kesiapan</h2>
+      </div>
+      <p class="misi-note">Bagian A LKPD — kenali dulu karyamu sebelum diuji.</p>
+
+      <h3 class="sub-h">1. Jenis karya yang kamu bawa</h3>
+      <div class="grid-4" id="gridJenis">
+        <button class="pick-card" data-jenis="Dashboard">
+          <span class="pick-emoji" aria-hidden="true">📊</span>
+          <span class="pick-title">Dashboard</span>
+          <span class="pick-sub">Papan pantau data</span>
+        </button>
+        <button class="pick-card" data-jenis="Infografis">
+          <span class="pick-emoji" aria-hidden="true">🖼️</span>
+          <span class="pick-title">Infographic</span>
+          <span class="pick-sub">Infografis (poster informasi)</span>
+        </button>
+        <button class="pick-card" data-jenis="Program">
+          <span class="pick-emoji" aria-hidden="true">🧩</span>
+          <span class="pick-title">Program</span>
+          <span class="pick-sub">Scratch / kuis digital</span>
+        </button>
+        <button class="pick-card" data-jenis="Kampanye">
+          <span class="pick-emoji" aria-hidden="true">📣</span>
+          <span class="pick-title">Campaign</span>
+          <span class="pick-sub">Kampanye digital (ajakan massal)</span>
+        </button>
+      </div>
+
+      <h3 class="sub-h">2. Kartu Warna Kesiapan</h3>
+      <div class="grid-3" id="gridKesiapan">
+        <button class="pick-card green" data-siap="Hijau">
+          <span class="pick-emoji" aria-hidden="true">🟢</span>
+          <span class="pick-title">Hijau</span>
+          <span class="pick-sub">Siap diuji</span>
+        </button>
+        <button class="pick-card yellow" data-siap="Kuning">
+          <span class="pick-emoji" aria-hidden="true">🟡</span>
+          <span class="pick-title">Kuning</span>
+          <span class="pick-sub">Hampir siap</span>
+        </button>
+        <button class="pick-card red" data-siap="Merah">
+          <span class="pick-emoji" aria-hidden="true">🔴</span>
+          <span class="pick-title">Merah</span>
+          <span class="pick-sub">Butuh bantuan</span>
+        </button>
+      </div>
+
+      <h3 class="sub-h">3. Dua pertanyaan singkat</h3>
+      <label class="field">
+        <span>Masalah apa yang mau diselesaikan?</span>
+        <textarea id="inpMasalah" rows="2" maxlength="220" placeholder="Contoh: Banyak sampah plastik di kelas tidak terdata."></textarea>
+      </label>
+      <label class="field">
+        <span>Siapa pengguna karyamu?</span>
+        <textarea id="inpPengguna" rows="2" maxlength="220" placeholder="Contoh: Wali kelas dan petugas piket."></textarea>
+      </label>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnMisi1Lanjut">Lanjut ke Misi 2 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISI 2 ============ -->
+  <section class="screen" id="screen-misi2">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">MISI 2</span>
+        <h2>Temukan Kesalahan 🔍</h2>
+      </div>
+      <p class="misi-note">
+        Bagian B LKPD — <span class="istilah" data-padanan="Contoh terselesaikan" title="Contoh terselesaikan">Worked Example</span>.
+        Ini adalah <strong>Dashboard Sampah Versi 1</strong>. Klik bagian yang <strong>salah</strong>.
+        Setiap temuan benar = <strong>+10 poin</strong>.
+      </p>
+
+      <div class="table-wrap">
+        <table class="tbl" id="tblBuggy">
+          <caption>Dashboard Sampah Versi 1 (masih bermasalah)</caption>
+          <thead>
+            <tr>
+              <th>Kelas</th><th>Botol plastik</th><th>Bungkus jajanan</th>
+              <th>Persentase botol</th><th>Petugas piket</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>8A</td><td>24</td><td>41</td><td>26,1%</td>
+              <td class="bug" data-bug="nama" tabindex="0" role="button">Aisyah Putri Rahma</td>
+            </tr>
+            <tr>
+              <td>8B</td><td>18</td><td>36</td><td>19,6%</td>
+              <td class="bug" data-bug="nama" tabindex="0" role="button">Bima Saputra</td>
+            </tr>
+            <tr>
+              <td>8C</td><td>30</td><td>58</td>
+              <td class="bug" data-bug="persen8c" tabindex="0" role="button">3,26%</td>
+              <td class="bug" data-bug="nama" tabindex="0" role="button">Citra Lestari</td>
+            </tr>
+            <tr>
+              <td>8D</td>
+              <td class="bug" data-bug="nilai8d" tabindex="0" role="button">10</td>
+              <td>33</td><td>—</td>
+              <td class="bug" data-bug="nama" tabindex="0" role="button">Dimas Pratama</td>
+            </tr>
+            <tr class="total-row">
+              <td>Total</td>
+              <td class="bug" data-bug="total" tabindex="0" role="button">82</td>
+              <td>168</td><td>—</td><td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="hint-box">
+        <strong>Petunjuk:</strong> ada <strong>minimal 3 kesalahan</strong> yang wajib kamu temukan.
+        Awas, ada <span class="istilah" data-padanan="Kesalahan pada program/karya" title="Kesalahan pada program/karya">bug</span> tersembunyi!
+      </div>
+
+      <div class="stat-row">
+        <span class="stat">Temuan: <strong id="bugCount">0</strong> / 3 wajib</span>
+        <button class="btn btn-ghost btn-sm" id="btnWorked">📘 Lihat Worked Example</button>
+      </div>
+
+      <div id="panelV2" class="reveal-box hidden">
+        <h3 class="sub-h">✅ Versi 2 — Setelah Diperbaiki</h3>
+        <div class="table-wrap">
+          <table class="tbl">
+            <caption>Dashboard Sampah Versi 2 (sudah diperbaiki)</caption>
+            <thead>
+              <tr><th>Kelas</th><th>Botol plastik</th><th>Bungkus jajanan</th><th>Persentase botol</th><th>Kelompok piket</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>8A</td><td>24</td><td>41</td><td>26,1%</td><td>1</td></tr>
+              <tr><td>8B</td><td>18</td><td>36</td><td>19,6%</td><td>2</td></tr>
+              <tr><td>8C</td><td>30</td><td>58</td><td>32,6%</td><td>3</td></tr>
+              <tr><td>8D</td><td>20</td><td>33</td><td>21,7%</td><td>4</td></tr>
+              <tr class="total-row"><td>Total</td><td>92</td><td>168</td><td>100%</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="chart-box" id="chartV2"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnMisi2Lanjut" disabled>Lanjut ke Misi 3 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISI 3 ============ -->
+  <section class="screen" id="screen-misi3">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">MISI 3</span>
+        <h2>Uji 3B — Berfungsi, Benar, Bermanfaat &amp; Aman</h2>
+      </div>
+      <p class="misi-note">
+        Bagian C LKPD — pasangkan setiap temuan ke kategori yang tepat.
+        Ini adalah bentuk <span class="istilah" data-padanan="Umpan balik (masukan)" title="Umpan balik (masukan)">feedback</span> dari <span class="istilah" data-padanan="Pengujian" title="Pengujian">testing</span>.
+      </p>
+
+      <div id="kartuAdaptif" class="adaptive-card"></div>
+
+      <div class="grid-3 legend-3b">
+        <div class="cat-card cat-fungsi"><span aria-hidden="true">⚙️</span><strong>Berfungsi</strong><small>Function</small></div>
+        <div class="cat-card cat-benar"><span aria-hidden="true">🎯</span><strong>Benar</strong><small>Correctness</small></div>
+        <div class="cat-card cat-aman"><span aria-hidden="true">🛡️</span><strong>Bermanfaat &amp; Aman</strong><small>Benefit &amp; Safety</small></div>
+      </div>
+
+      <div id="listTemuan" class="temuan-list"></div>
+
+      <div class="stat-row">
+        <span class="stat">Benar: <strong id="misi3Benar">0</strong> / 5</span>
+        <button class="btn btn-accent btn-sm" id="btnCek3">✅ Cek Jawaban</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnMisi3Lanjut" disabled>Lanjut ke Misi 4 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISI 4 ============ -->
+  <section class="screen" id="screen-misi4">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">MISI 4</span>
+        <h2>Matriks Prioritas 🎯</h2>
+      </div>
+      <p class="misi-note">
+        Bagian D LKPD — beri skor <strong>Penting (1–3)</strong> dan <strong>Mudah (1–3)</strong>.
+        Sistem akan mengurutkan otomatis. Ini seperti menguji <span class="istilah" data-padanan="Purwarupa (contoh awal)" title="Purwarupa (contoh awal)">prototype</span> milikmu.
+      </p>
+
+      <div class="golden-rule">
+        🏅 <strong>Aturan Emas:</strong> Temuan tentang <strong>KEBENARAN</strong> dan <strong>KEAMANAN</strong> selalu didahulukan!
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl" id="tblMatriks">
+          <thead>
+            <tr><th>No</th><th>Temuan</th><th>Jenis</th><th>Penting</th><th>Mudah</th><th>Skor</th></tr>
+          </thead>
+          <tbody id="tbodyMatriks"></tbody>
+        </table>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-accent" id="btnHitungPrioritas">📊 Hitung &amp; Urutkan</button>
+      </div>
+
+      <div id="hasilPrioritas" class="hidden">
+        <h3 class="sub-h">Urutan Prioritas (Skor Tertinggi ke Terendah)</h3>
+        <ol id="listPrioritas" class="rank-list"></ol>
+
+        <h3 class="sub-h">Pilih 3 Temuan Teratas untuk Diperbaiki Lebih Dulu</h3>
+        <div id="pilihTop3" class="check-list"></div>
+        <div class="stat-row">
+          <span class="stat">Terpilih: <strong id="top3Count">0</strong> / 3</span>
+          <button class="btn btn-accent btn-sm" id="btnCek4">✅ Cek Jawaban</button>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnMisi4Lanjut" disabled>Lanjut ke Misi 5 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISI 5 ============ -->
+  <section class="screen" id="screen-misi5">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">MISI 5</span>
+        <h2>Perbaiki &amp; Catat 🔧</h2>
+      </div>
+      <p class="misi-note">
+        Bagian D LKPD — <span class="istilah" data-padanan="Catatan berurutan" title="Catatan berurutan">Log</span> Perbaikan.
+        Klik (atau seret) kartu <strong>“Sesudah”</strong> ke kotak <strong>“Sebelum”</strong> yang cocok.
+        Ini disebut <span class="istilah" data-padanan="Iterasi (pengulangan perbaikan)" title="Iterasi (pengulangan perbaikan)">iteration</span>.
+      </p>
+
+      <div id="logRows" class="log-rows"></div>
+
+      <h3 class="sub-h">Kartu “Sesudah”</h3>
+      <div id="chipPool5" class="chip-pool"></div>
+
+      <div class="stat-row">
+        <span class="stat">Tersusun benar: <strong id="logBenar">0</strong> / 4</span>
+        <button class="btn btn-accent btn-sm" id="btnCekLog">✅ Cek Jawaban</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnUjiUlang" disabled>Uji Ulang ✅</button>
+      </div>
+
+      <div id="panelUjiUlang" class="reveal-box hidden">
+        <p class="big-ok">🎉 Semua persen berjumlah 100% ✓</p>
+        <p class="center-note">Karyamu sudah lolos uji ulang. Lanjutkan ke panggung!</p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnMisi5Lanjut" disabled>Lanjut ke Misi 6 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISI 6 ============ -->
+  <section class="screen" id="screen-misi6">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">MISI 6</span>
+        <h2>Showcase 5 Bagian 🎤</h2>
+      </div>
+      <p class="misi-note">
+        Bagian E LKPD — susun <span class="istilah" data-padanan="Presentasi singkat" title="Presentasi singkat">pitch</span> 2 menit.
+        Ini adalah momen <span class="istilah" data-padanan="Unjuk karya / pameran karya" title="Unjuk karya / pameran karya">showcase</span> kelompokmu.
+      </p>
+
+      <h3 class="sub-h">A. Susun urutan 5 bagian cerita</h3>
+      <div id="slots6" class="slot-col"></div>
+      <h3 class="sub-h">Kartu Bagian Cerita</h3>
+      <div id="pool6" class="chip-pool"></div>
+
+      <div class="stat-row">
+        <span class="stat">Urutan benar: <strong id="urutanBenar">0</strong> / 5</span>
+        <button class="btn btn-accent btn-sm" id="btnCek6">✅ Cek Jawaban</button>
+      </div>
+
+      <div id="panelFormat6" class="hidden">
+        <h3 class="sub-h">B. Pilih format presentasimu</h3>
+        <div class="grid-3" id="gridFormat">
+          <button class="pick-card" data-format="Demo Langsung"><span class="pick-emoji">🖥️</span><span class="pick-title">Demo Langsung</span></button>
+          <button class="pick-card" data-format="Slide Ringkas"><span class="pick-emoji">📑</span><span class="pick-title">Slide Ringkas</span></button>
+          <button class="pick-card" data-format="Panggung Infografis"><span class="pick-emoji">🖼️</span><span class="pick-title">Panggung Infografis</span></button>
+          <button class="pick-card" data-format="Talk Show Mini"><span class="pick-emoji">🎙️</span><span class="pick-title">Talk Show Mini</span></button>
+          <button class="pick-card" data-format="Iklan Layanan Masyarakat"><span class="pick-emoji">📺</span><span class="pick-title">Iklan Layanan Masyarakat</span></button>
+        </div>
+      </div>
+
+      <div id="panelTimer6" class="hidden">
+        <h3 class="sub-h">C. Simulasi Latihan 2 Menit</h3>
+        <div class="timer-stage">
+          <div class="spotlight"></div>
+          <div class="timer-big" id="timer6">2:00</div>
+          <p class="center-note">Latihan dulu di sini, lalu tampil di halaman Showcase.</p>
+          <button class="btn btn-accent" id="btnTimer6">▶️ Mulai Latihan</button>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnMisi6Lanjut" disabled>Lanjut ke Misi 7 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISI 7 ============ -->
+  <section class="screen" id="screen-misi7">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">MISI 7</span>
+        <h2>Refleksi &amp; Etika 🧠</h2>
+      </div>
+      <p class="misi-note">Bagian F &amp; G LKPD — uji hati nuranimu, lalu renungkan perjalananmu.</p>
+
+      <h3 class="sub-h">A. Kuis Etika Karya Digital</h3>
+      <div id="listEtika" class="etika-list"></div>
+
+      <div class="stat-row">
+        <span class="stat">Benar: <strong id="etikaBenar">0</strong> / 3</span>
+        <button class="btn btn-accent btn-sm" id="btnCek7">✅ Cek Jawaban</button>
+      </div>
+
+      <h3 class="sub-h">
+        B. Refleksi
+        <span class="istilah" data-padanan="Apa–Lalu Apa–Sekarang Apa (model refleksi)" title="Apa–Lalu Apa–Sekarang Apa (model refleksi)">What–So What–Now What</span>
+        &amp; <span class="istilah" data-padanan="Penilaian diri" title="Penilaian diri">Self Assessment</span>
+      </h3>
+
+      <label class="field reflect-box box-apa">
+        <span>1. APA yang terjadi?</span>
+        <small>Ceritakan apa yang diuji, ditemukan, diperbaiki, dan perasaanmu.</small>
+        <textarea id="refApa" rows="3" maxlength="400"></textarea>
+      </label>
+      <label class="field reflect-box box-lalu">
+        <span>2. LALU APA artinya?</span>
+        <small>Apa yang kamu pelajari tentang karya, kerja sama, dan dirimu sendiri?</small>
+        <textarea id="refLalu" rows="3" maxlength="400"></textarea>
+      </label>
+      <label class="field reflect-box box-sekarang">
+        <span>3. SEKARANG APA yang akan dilakukan?</span>
+        <small>Rencana perbaikan &amp; langkah lanjutmu.</small>
+        <textarea id="refSekarang" rows="3" maxlength="400"></textarea>
+      </label>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnMisi7Lanjut" disabled>Masuk Panggung Showcase 🎬</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHOWCASE ============ -->
+  <section class="screen" id="screen-showcase">
+    <div class="card showcase-card">
+      <div class="misi-head">
+        <span class="misi-no purple">SHOWCASE</span>
+        <h2>Panggung Presentasi 🎬</h2>
+      </div>
+
+      <div class="stage" id="stageShowcase">
+        <div class="spotlight"></div>
+        <div class="stage-team" id="stageTeam">Kelompok</div>
+        <ol class="stage-list" id="stageList"></ol>
+        <div class="timer-big purple" id="timerShowcase">2:00</div>
+        <div class="btn-row center">
+          <button class="btn btn-primary btn-big" id="btnMulaiTampil">▶️ Mulai Presentasi</button>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Kartu Apresiasi — 2 Bintang 1 Harapan ⭐⭐🌟</h3>
+      <p class="center-note">Isi untuk kelompok lain yang tampil (versi virtual).</p>
+      <div class="grid-3">
+        <label class="field"><span>Bintang 1</span><input type="text" id="apre1" maxlength="80" placeholder="Hal baik pertama"></label>
+        <label class="field"><span>Bintang 2</span><input type="text" id="apre2" maxlength="80" placeholder="Hal baik kedua"></label>
+        <label class="field"><span>Harapan</span><input type="text" id="apre3" maxlength="80" placeholder="Saran perbaikan"></label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnKeHasil">Lihat Hasil Akhir 🏆</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HASIL ============ -->
+  <section class="screen" id="screen-result">
+    <div class="card">
+      <div class="misi-head">
+        <span class="misi-no">HASIL</span>
+        <h2>Rapor Karya Lab 🏆</h2>
+      </div>
+
+      <div class="score-hero">
+        <div class="score-number" id="scoreNumber">0</div>
+        <div class="score-stars" id="scoreStars" aria-label="Bintang"></div>
+        <p class="score-label">dari 100 poin</p>
+      </div>
+
+      <div id="resultSummary" class="result-summary"></div>
+
+      <h3 class="sub-h">🎨 Pelangi Perasaan — Bagaimana perasaanmu hari ini?</h3>
+      <div class="grid-4" id="rainbowBox">
+        <button class="pick-card rb-red" data-feel="Merah — Semangat &amp; Berani"><span class="pick-emoji">🔴</span><span class="pick-title">Merah</span><span class="pick-sub">Semangat &amp; Berani</span></button>
+        <button class="pick-card rb-yellow" data-feel="Kuning — Senang &amp; Ceria"><span class="pick-emoji">🟡</span><span class="pick-title">Kuning</span><span class="pick-sub">Senang &amp; Ceria</span></button>
+        <button class="pick-card rb-green" data-feel="Hijau — Tenang &amp; Lega"><span class="pick-emoji">🟢</span><span class="pick-title">Hijau</span><span class="pick-sub">Tenang &amp; Lega</span></button>
+        <button class="pick-card rb-blue" data-feel="Biru — Masih Bingung"><span class="pick-emoji">🔵</span><span class="pick-title">Biru</span><span class="pick-sub">Masih Bingung</span></button>
+      </div>
+
+      <h3 class="sub-h">
+        👥 <span class="istilah" data-padanan="Penilaian teman sebaya" title="Penilaian teman sebaya">Peer Assessment</span>
+        — Penilaian Teman
+      </h3>
+      <div class="grid-2">
+        <div class="peer-card">
+          <label class="field"><span>Nama Teman 1</span><input type="text" id="peerNama1" maxlength="25"></label>
+          <label class="field"><span>Kontribusi (1–4)</span>
+            <select id="peerKontrib1"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option></select>
+          </label>
+          <label class="field"><span>Hal yang dikagumi</span><input type="text" id="peerPujian1" maxlength="120"></label>
+          <label class="field"><span>Saran</span><input type="text" id="peerSaran1" maxlength="120"></label>
+        </div>
+        <div class="peer-card">
+          <label class="field"><span>Nama Teman 2</span><input type="text" id="peerNama2" maxlength="25"></label>
+          <label class="field"><span>Kontribusi (1–4)</span>
+            <select id="peerKontrib2"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option></select>
+          </label>
+          <label class="field"><span>Hal yang dikagumi</span><input type="text" id="peerPujian2" maxlength="120"></label>
+          <label class="field"><span>Saran</span><input type="text" id="peerSaran2" maxlength="120"></label>
+        </div>
+      </div>
+
+      <div class="btn-row center wrap">
+        <button class="btn btn-primary" id="btnSalin">📋 Salin Hasil</button>
+        <button class="btn btn-sekunder" id="btnUnduh">⬇️ Unduh Hasil (.txt)</button>
+        <button class="btn btn-accent" id="btnGlosarium2">📖 Glosarium</button>
+        <button class="btn btn-ghost" id="btnMainLagi">🔄 Main Lagi</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER (WAJIB PERSIS) ================= -->
+<footer class="app-footer" id="appFooter">
+  <p id="footerText">LKPD Informatika Kelas 8 · Proyek Integratif: Uji, Presentasi, Refleksi · © 2026 SMP Negeri 19 Kota Bekasi</p>
+  <p class="footer-links">
+    <button class="link-btn" id="btnGlosarium">📖 Glosarium</button> ·
+    <button class="link-btn" id="btnCaraMain2">📘 Cara Bermain</button> ·
+    <button class="link-btn" id="btnWorked2">🧪 Worked Example</button>
+  </p>
+</footer>
+
+<!-- ================= MODAL: CARA BERMAIN ================= -->
+<div class="modal-backdrop" id="modalCara" role="dialog" aria-modal="true" aria-labelledby="caraTitle">
+  <div class="modal">
+    <button class="modal-close" data-close="modalCara" aria-label="Tutup">✕</button>
+    <h2 id="caraTitle">📘 Cara Bermain KARYA LAB</h2>
+    <ol class="howto">
+      <li>Isi <strong>nama kelompok</strong>, <strong>anggota</strong>, <strong>jenis karya</strong>, dan <strong>peranmu</strong>.</li>
+      <li>Lewati <strong>7 misi berurutan</strong>. Kamu tidak bisa melompat misi.</li>
+      <li><strong>Misi 2</strong>: klik bagian dashboard yang salah (minimal 3 temuan).</li>
+      <li><strong>Misi 3</strong>: pasangkan temuan ke kategori Berfungsi / Benar / Bermanfaat &amp; Aman.</li>
+      <li><strong>Misi 4</strong>: beri skor Penting &amp; Mudah, lalu pilih 3 prioritas teratas.</li>
+      <li><strong>Misi 5</strong>: klik kartu “Sesudah” lalu klik kotak “Sebelum” yang cocok.</li>
+      <li><strong>Misi 6</strong>: susun urutan cerita, pilih format, latihan timer 2 menit.</li>
+      <li><strong>Misi 7</strong>: jawab kuis etika &amp; isi refleksi.</li>
+      <li>Selesai! Lihat skor, bintang, dan unduh hasilmu.</li>
+    </ol>
+    <p class="tip-line">
+      💡 <span class="istilah" data-padanan="Bantuan bertahap" title="Bantuan bertahap">Scaffolding</span>:
+      setiap misi punya petunjuk. Butuh bantuan? Klik ❓ di header.
+    </p>
+  </div>
+</div>
+
+<!-- ================= MODAL: GLOSARIUM ================= -->
+<div class="modal-backdrop" id="modalGlosarium" role="dialog" aria-modal="true" aria-labelledby="glosTitle">
+  <div class="modal">
+    <button class="modal-close" data-close="modalGlosarium" aria-label="Tutup">✕</button>
+    <h2 id="glosTitle">📖 Glosarium EN–ID</h2>
+    <div class="table-wrap">
+      <table class="tbl small">
+        <thead><tr><th>English Term</th><th>Padanan Indonesia</th><th>Muncul di</th></tr></thead>
+        <tbody id="tbodyGlosarium"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: WORKED EXAMPLE ================= -->
+<div class="modal-backdrop" id="modalWorked" role="dialog" aria-modal="true" aria-labelledby="workTitle">
+  <div class="modal">
+    <button class="modal-close" data-close="modalWorked" aria-label="Tutup">✕</button>
+    <h2 id="workTitle">🧪 Worked Example — Contoh Terselesaikan</h2>
+    <p class="center-note">
+      <span class="istilah" data-padanan="Contoh terselesaikan" title="Contoh terselesaikan">Worked Example</span>:
+      Dashboard Sampah dari pengumpulan data kelas 8A–8D.
+    </p>
+    <h3 class="sub-h">Versi 1 (masih salah)</h3>
+    <ul class="work-list">
+      <li>Total botol tertulis <strong>82</strong>, padahal 24 + 18 + 30 + 20 = <strong>92</strong>. (Nilai kelas 8D salah ketik: 10 → seharusnya 20)</li>
+      <li>Persen 8C tertulis <strong>3,26%</strong>, padahal 30 ÷ 92 × 100% = <strong>32,6%</strong> (letak koma salah).</li>
+      <li>Kolom “Petugas piket” berisi <strong>nama lengkap murid</strong> → melanggar privasi.</li>
+      <li>Diagram tidak berjudul &amp; semua batang sama warna → sulit dibaca.</li>
+    </ul>
+    <h3 class="sub-h">Versi 2 (sudah diperbaiki)</h3>
+    <ul class="work-list ok">
+      <li>Total botol = <strong>92</strong>; kelas 8D = <strong>20</strong>.</li>
+      <li>Persen 8C = <strong>32,6%</strong>; total persen = <strong>100%</strong>.</li>
+      <li>Kolom diganti menjadi <strong>Kelompok piket 1–4</strong> (tanpa nama pribadi).</li>
+      <li>Diagram diberi judul <strong>“Sampah Plastik per Kelas (buah)”</strong> + satuan.</li>
+    </ul>
+    <p class="tip-line">Bungkus jajanan: 41 + 36 + 58 + 33 = <strong>168</strong>.</p>
+  </div>
+</div>
+
+<!-- ================= MODAL: MODE GURU ================= -->
+<div class="modal-backdrop" id="modalGuru" role="dialog" aria-modal="true" aria-labelledby="guruTitle">
+  <div class="modal">
+    <button class="modal-close" data-close="modalGuru" aria-label="Tutup">✕</button>
+    <h2 id="guruTitle">🧑‍🏫 Mode Guru — Kunci Jawaban</h2>
+    <div id="guruIsi"></div>
+    <div class="btn-row">
+      <button class="btn btn-danger" id="btnReset">🗑️ Reset Semua Progres</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

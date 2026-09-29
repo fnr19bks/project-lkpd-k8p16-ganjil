@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32"
+     role="img" aria-label="Karya Lab — otak, roda gigi, dan papan skor">
+  <!-- Latar -->
+  <rect width="32" height="32" rx="7" fill="#1E5B94"/>
+
+  <!-- Otak -->
+  <circle cx="11.5" cy="11.5" r="6.4" fill="#F4F8FB"/>
+  <path d="M8.4 9.2c1.7-.9 3.6-.4 4.4 1M8 12.2c1.3-.7 2.8-.3 3.5.8M9 14.9c1.2-.6 2.6-.2 3.2.7"
+        stroke="#1E5B94" stroke-width="1.15" fill="none" stroke-linecap="round"/>
+
+  <!-- Roda gigi -->
+  <g transform="translate(23.2,10.4)">
+    <circle r="4.3" fill="#39B54A"/>
+    <rect x="-1.05" y="-6.3" width="2.1" height="2.5" rx="0.6" fill="#39B54A"/>
+    <rect x="-1.05" y="3.8" width="2.1" height="2.5" rx="0.6" fill="#39B54A"/>
+    <rect x="-6.3" y="-1.05" width="2.5" height="2.1" rx="0.6" fill="#39B54A"/>
+    <rect x="3.8" y="-1.05" width="2.5" height="2.1" rx="0.6" fill="#39B54A"/>
+    <circle r="1.6" fill="#F4F8FB"/>
+  </g>
+
+  <!-- Papan skor -->
+  <rect x="4.5" y="21.5" width="23" height="7" rx="2" fill="#F5C518"/>
+  <rect x="6.8" y="23.5" width="4.2" height="3" rx="1" fill="#1E5B94"/>
+  <rect x="12.6" y="23.5" width="4.2" height="3" rx="1" fill="#1E5B94"/>
+  <rect x="18.4" y="23.5" width="6.8" height="3" rx="1" fill="#D9534F"/>
+</svg>
